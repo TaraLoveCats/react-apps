@@ -1,0 +1,15 @@
+.ant-collapse > .ant-collapse-item > .ant-collapse-header {
+    padding: 5px 10px 0px 30px;
+}
+
+.ant-collapse-content > .ant-collapse-content-box {
+    padding: 5px 10px;
+}
+
+.action-edit:hover{
+    color: #28a745;
+}
+
+.action-delete:hover {
+    color: #dc3545;
+}

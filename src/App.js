@@ -1,26 +1,21 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Page from './components/Page'
+import { ConfigProvider, Empty } from 'antd';
+import { Provider } from 'react-redux';
+import store from './store'
+import zhCN from 'antd/es/locale/zh_CN';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+moment.locale('zh-cn');
+
+export default () => (
+    <Provider store={store}>
+        <ConfigProvider 
+            locale={zhCN} 
+            renderEmpty={() => <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
-
-export default App;
+            <Page />
+        </ConfigProvider>
+    </Provider>
+)
