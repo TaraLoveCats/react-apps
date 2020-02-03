@@ -4,6 +4,7 @@ import { Form, Input, InputNumber, DatePicker, Button, Icon, Row, Col, Tabs, mes
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { addAccount, editAccount, getCurrentData } from '../../store/actions';
+import { id2TypeAndIconName } from '../../util'
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -53,17 +54,20 @@ class AddNewAccount extends Component {
 
     componentDidMount() {
         const { id } = this.props.match.params;
-        this.props.getCurrentData(id);
+        this.props.getCurrentData(id)
+            .then(cid => {
+                this.setState({ selectedCategoryId: cid })
+            });
     }
 
-    static getDerivedStateFromProps(props, current_state) {
-        if (current_state.selectedCategoryId === null) {
-            return {
-                selectedCategoryId: props.currentItem.cid,
-            }
-        }
-        return null
-    }
+    // static getDerivedStateFromProps(props, current_state) {
+    //     if (current_state.selectedCategoryId === null) {
+    //         return {
+    //             selectedCategoryId: props.currentItem.cid,
+    //         }
+    //     }
+    //     return null
+    // }
 
     submitForm = (e, id) => {
         e.preventDefault();
@@ -72,7 +76,7 @@ class AddNewAccount extends Component {
             message.warning('请务必选择账目种类~~');
             return;
         }
-        const { form: { validateFields } } = this.props;
+        const { form: { validateFields }, match, history, editItem, addItem } = this.props;
         validateFields((err, fieldsValue) => {
             if (!err) {
                 const values = {
@@ -81,15 +85,28 @@ class AddNewAccount extends Component {
                     cid: selectedCategoryId
                 }
                 // console.log(values)
-                if (this.props.match.params.id) {
+                if (match.params.id) {
                     //editMode
                     values.id = id;
-                    this.props.editItem(values);
+                    editItem(values)
+                        .then(() => {
+                            message.success('修改成功')
+                            history.push('/life-apps/account-book');
+                        })
+                        .catch((e) => {
+                            message.error('修改失败')
+                        });
                 } else {
                     //addMode
-                    this.props.addItem(values);
+                    addItem(values).then(() => {    
+                        message.success('添加成功');
+                        history.push('/life-apps/account-book');
+                    })
+                    .catch((e) => {
+                        // console.log(e)
+                        message.error('添加失败')
+                    });
                 }
-                this.props.history.push('/life-apps/account-book')
             }
         })
     }
@@ -104,10 +121,10 @@ class AddNewAccount extends Component {
     }
 
     render() {
-        const { getFieldDecorator } = this.props.form;
-        const { currentItem, match, categories, id2TypeAndIconName, loading } = this.props;
+        const { form: { getFieldDecorator },  currentItem, match, history, categories, cidsMap, loading, messageInfo } = this.props;
+        
         const { id } = match.params;
-        const initActiveKey = (id2TypeAndIconName[currentItem.cid] && id2TypeAndIconName[currentItem.cid].type) || 'outcome'
+        const initActiveKey = (cidsMap[currentItem.cid] && cidsMap[currentItem.cid].type) || 'outcome'
         return (
             <React.Fragment>
                 <Spin tip="加载中..." spinning={loading}>
@@ -195,7 +212,7 @@ class AddNewAccount extends Component {
 AddNewAccount.propTypes = {
     currentItem: PropTypes.object.isRequired,
     categories: PropTypes.arrayOf(PropTypes.object).isRequired,
-    id2TypeAndIconName: PropTypes.object.isRequired,
+    cidsMap: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -206,12 +223,15 @@ AddNewAccount.propTypes = {
 }
 
 const WrappedAddNewAccount = Form.create({ name: 'create_new_account' })(AddNewAccount);
-const mapStateToProps = state => ({
-    currentItem: state.currentAccount,
-    categories: state.categories,
-    id2TypeAndIconName: state.id2TypeAndIconName,
-    loading: state.loading
-})
+const mapStateToProps = state => {
+    const cidsMap = id2TypeAndIconName(state.categories);
+    return {
+        currentItem: state.currentAccount,
+        categories: state.categories,
+        cidsMap,
+        loading: state.loading,
+    }
+}
 const mapDispatchToProps = dispatch => ({
     addItem: item => dispatch(addAccount(item)),
     editItem: item => dispatch(editAccount(item)),

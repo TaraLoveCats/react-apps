@@ -13,17 +13,22 @@ const changeLoading = loading => ({
     type: CHANGE_LOADING,
     loading
 })
-
 //thunk action creators
 export const getTotalData = () => async dispatch => {
     dispatch(changeLoading(true));
-    const [ items, categories ] = await Promise.all([ axios.get('/items'), axios.get('/categories') ]);
+    let items, categories;
+    try {
+        [ items, categories ] = await Promise.all([ axios.get('/items'), axios.get('/categories') ]);
+    } catch(e) {
+        return Promise.reject(e)
+    }
     dispatch({
         type: GET_TOTAL_DATA,
         items: items.data,
         categories: categories.data
     });
     dispatch(changeLoading(false));
+    return Promise.resolve();
 }
 
 export const getCurrentData = (id) => async (dispatch, getState) => {
@@ -36,46 +41,69 @@ export const getCurrentData = (id) => async (dispatch, getState) => {
     } else { 
         //直接刷新新增页面，需要请求categories, id存在还需要请求对应数据
         dispatch(changeLoading(true));
-        const promiseArr = [id ? axios.get(`/items/${id}`) : Promise.resolve()];
-        promiseArr.push(axios.get('/categories'));
-        const [ item, categories ] = await Promise.all(promiseArr);
+        let item, categories;
+        try {
+            const promiseArr = [id ? axios.get(`/items/${id}`) : Promise.resolve()];
+            promiseArr.push(axios.get('/categories'));
+            [ item, categories ] = await Promise.all(promiseArr);
+        } catch(e) {
+            return Promise.reject(e)
+        }
         dispatch({
             type: GET_CURRENT_DATA,
             item: id ? item.data : getState().currentAccount,
             categories: categories.data
         })
         dispatch(changeLoading(false));
+        return Promise.resolve(item.data.cid);
     }
 
 }
 
 export const addAccount = item => async dispatch => {
     dispatch(changeLoading(true));
-    const newItem = await axios.post('/items', item);
+    let newItem;
+    try {
+        newItem = await axios.post('/items', item);
+    } catch (e) {
+        return Promise.reject(e);
+    } 
     dispatch({
         type: ADD_ACCOUNT,
         id: generateID(),
         item: newItem.data
     })
     dispatch(changeLoading(false));
+    return Promise.resolve();
 }
 
 export const editAccount = item => async dispatch => {
     dispatch(changeLoading(true));
-    const updatedItem = await axios.put(`/items/${item.id}`, item);
+    let updatedItem;
+    try {
+        updatedItem = await axios.put(`/items/${item.id}`, item);
+    } catch (e) {
+        return Promise.reject(e);
+    }
     dispatch({
         type: EDIT_ACCOUNT,
         item: updatedItem.data
     })
     dispatch(changeLoading(false));
+    return Promise.resolve();
 }
 
 export const deleteAccount = id => async dispatch => {
     dispatch(changeLoading(true));
-    axios.delete(`/items/${id}`);
+    try {
+        axios.delete(`/items/${id}`);
+    } catch(e) {
+        return Promise.reject(e);
+    }
     dispatch({
         type: DELETE_ACCOUNT,
         id
     })
     dispatch(changeLoading(false));
+    return Promise.resolve();
 }

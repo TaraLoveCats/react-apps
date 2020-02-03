@@ -47,25 +47,6 @@ const categories = (state = [], action) => {
     }
 }
 
-//衍生结构
-const id2TypeAndIconName = (state = {}, action) => {
-    switch (action.type) {
-        case GET_TOTAL_DATA:
-        case GET_CURRENT_DATA:
-            const id2TypeAndIconName= action.categories.reduce((map, item) => {
-                map[item.id] = {
-                    type: item.type,
-                    iconName: item.iconName,
-                    name: item.name
-                };
-                return map;
-            }, {})
-            return id2TypeAndIconName
-        default:
-            return state
-    }
-}
-
 const loading = (state = false, action) => {
     switch (action.type) {
         case CHANGE_LOADING:
@@ -79,8 +60,7 @@ const accountApp = combineReducers({
     accounts,
     categories,
     currentAccount,
-    id2TypeAndIconName,
-    loading
+    loading,
 })
 
 export default accountApp;

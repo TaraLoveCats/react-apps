@@ -4,6 +4,7 @@ import { Button, List, Descriptions, Affix, DatePicker, Popconfirm, Icon, Row, C
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { deleteAccount, getTotalData } from '../../store/actions';
+import { id2TypeAndIconName } from '../../util'
 import './Home.css'
 
 const { MonthPicker } = DatePicker;
@@ -28,7 +29,9 @@ class Home extends Component {
     }
 
     deleteItem = (id) => {
-        this.props.deleteItem(id);
+        this.props.deleteItem(id)
+            .then(() => message.success('删除成功'))
+            .catch((e) => message.error('删除失败'));
     }
 
     editItem = (id) => {
@@ -42,9 +45,8 @@ class Home extends Component {
     }
 
     render() {
-        console.log(moment().format('YYYY-MM'))
         const { dateString } = this.state;
-        const { totalData, id2TypeAndIconName, loading } = this.props;
+        const { totalData, loading, cidsMap } = this.props;
         const monthData = totalData.filter(item => {
             return item.date.startsWith(dateString)
         });
@@ -63,7 +65,7 @@ class Home extends Component {
 
         let totalIncome = 0, totalOutcome = 0;
         monthData.forEach(item => {
-            const type = id2TypeAndIconName[item.cid].type
+            const type = cidsMap[item.cid].type
             if (type === 'income') {
                 totalIncome += item.price
             } else if (type === 'outcome') {
@@ -105,7 +107,7 @@ class Home extends Component {
                         const dayList = dataMapByDay[date];
                         let dayIncome = 0, dayOutcome = 0;
                         dayList.forEach(item => {
-                            const type = id2TypeAndIconName[item.cid].type
+                            const type = cidsMap[item.cid].type
                             if (type === 'income') {
                                 dayIncome += item.price;
                             } else if (type === 'outcome') {
@@ -140,7 +142,7 @@ class Home extends Component {
                                             size="small"
                                             dataSource={dayList}
                                             renderItem={item => {
-                                                const categoryId = id2TypeAndIconName[item.cid];
+                                                const categoryId = cidsMap[item.cid];
                                                 const priceWithSign = categoryId.type === 'income' ? (<span>{`+${item.price}`}</span>) : (<span>{`-${item.price}`}</span>);
                                                 return (
                                                     <List.Item
@@ -187,7 +189,7 @@ class Home extends Component {
 
 Home.propTypes = {
     totalData: PropTypes.arrayOf(PropTypes.object).isRequired,
-    id2TypeAndIconName: PropTypes.object.isRequired,
+    cidsMap: PropTypes.object.isRequired,
     loading: PropTypes.bool.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -195,11 +197,14 @@ Home.propTypes = {
     getTotalData: PropTypes.func.isRequired,
 }
 
-const mapStateToProps = state => ({
-    totalData: state.accounts,
-    id2TypeAndIconName: state.id2TypeAndIconName,
-    loading: state.loading
-})
+const mapStateToProps = state => {
+    const cidsMap = id2TypeAndIconName(state.categories);
+    return {
+        totalData: state.accounts,
+        cidsMap,
+        loading: state.loading,
+    }
+}
 const mapDispatchToProps = dispatch => ({
     deleteItem: id => dispatch(deleteAccount(id)),
     getTotalData: () => dispatch(getTotalData()),

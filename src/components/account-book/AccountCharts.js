@@ -5,6 +5,7 @@ import { Tabs, DatePicker, Empty, Spin } from 'antd';
 import { getTotalData } from '../../store/actions';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import moment from 'moment';
+import { id2TypeAndIconName } from '../../util'
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -15,7 +16,6 @@ const sortByValue = (a, b) => {
 }
 
 const CustomizedLabel = ({ x, y, width, height, value, total }) => {
-    console.log(total)
     const percent = (value / total * 100).toFixed(1)
     return (
         <text
@@ -60,8 +60,8 @@ class AccountCharts extends Component {
     }
 
     componentDidMount() {
-        const { totalData, id2TypeAndIconName } = this.props;
-        if (Object.keys(id2TypeAndIconName).length === 0 || totalData.length === 0) {
+        const { totalData, cidsMap } = this.props;
+        if (Object.keys(cidsMap).length === 0 || totalData.length === 0) {
             this.props.getTotalData()
         }
     }
@@ -73,14 +73,14 @@ class AccountCharts extends Component {
 
     render() {
         //处理数据
-        const { totalData, id2TypeAndIconName, loading } = this.props;
+        const { totalData, cidsMap, loading } = this.props;
         const { dateString } = this.state;
         const dataShowed = dateString[0] ? totalData.filter(item => item.date >= dateString[0] && item.date <= dateString[1]) : totalData;
         const cidToPriceSum = {};
         let totalIncome = 0, totalOutcome = 0;
         dataShowed.forEach((item) => {
             //calculate the tatal
-            if (id2TypeAndIconName[item.cid].type === 'income') {
+            if (cidsMap[item.cid].type === 'income') {
                 totalIncome += item.price;
             } else {
                 totalOutcome += item.price;
@@ -94,7 +94,7 @@ class AccountCharts extends Component {
         })
         const outcomeDataByCategory = [], incomeDataByCategory = [];
         Object.keys(cidToPriceSum).forEach(cid => {
-            const cidMap = id2TypeAndIconName[cid];
+            const cidMap = cidsMap[cid];
             if (cidMap.type === 'outcome') {
                 outcomeDataByCategory.push({
                     name: cidMap.name,
@@ -147,17 +147,19 @@ class AccountCharts extends Component {
 
 AccountCharts.propTypes = {
     totalData: PropTypes.arrayOf(PropTypes.object).isRequired,
-    id2TypeAndIconName: PropTypes.object.isRequired,
+    cidsMap: PropTypes.object.isRequired,
     getTotalData: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
 }
 
-const mapStateToProps = state => ({
-    totalData: state.accounts,
-    id2TypeAndIconName: state.id2TypeAndIconName,
-    loading: state.loading
-})
-
+const mapStateToProps = state => {
+    const cidsMap = id2TypeAndIconName(state.categories);
+    return {
+        totalData: state.accounts,
+        cidsMap,
+        loading: state.loading,
+    }
+}
 const mapDispatchToProps = dispatch => ({
     getTotalData: () => dispatch(getTotalData())
 })
