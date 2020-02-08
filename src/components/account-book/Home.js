@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, List, Descriptions, Affix, DatePicker, Popconfirm, Icon, Row, Col, Avatar, Empty, Collapse, message, Spin } from 'antd';
+import { Button, List, Descriptions, Affix, DatePicker, Popconfirm, Icon, Row, Col, Avatar, Empty, Collapse, Spin } from 'antd';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import { deleteAccount, getTotalData } from '../../store/actions';
-import { id2TypeAndIconName } from '../../util'
 import './Home.css'
+import { DELETE_ACCOUNT, GET_TOTAL_DATA, id2TypeAndIconName } from '../../util/account'
 
 const { MonthPicker } = DatePicker;
 const { Panel } = Collapse;
@@ -21,7 +20,7 @@ class Home extends Component {
 
     componentDidMount() {
         //获取所有数据
-        this.props.getTotalData();
+        this.props.dispatch({ type: GET_TOTAL_DATA })
     }
 
     changeMonth = (date, dateString) => {
@@ -29,9 +28,7 @@ class Home extends Component {
     }
 
     deleteItem = (id) => {
-        this.props.deleteItem(id)
-            .then(() => message.success('删除成功'))
-            .catch((e) => message.error('删除失败'));
+        this.props.dispatch({ type: DELETE_ACCOUNT, payload: { id } })
     }
 
     editItem = (id) => {
@@ -193,8 +190,6 @@ Home.propTypes = {
     loading: PropTypes.bool.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    deleteItem: PropTypes.func.isRequired,
-    getTotalData: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = state => {
@@ -205,12 +200,7 @@ const mapStateToProps = state => {
         loading: state.loading,
     }
 }
-const mapDispatchToProps = dispatch => ({
-    deleteItem: id => dispatch(deleteAccount(id)),
-    getTotalData: () => dispatch(getTotalData()),
-})
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
 )(Home);

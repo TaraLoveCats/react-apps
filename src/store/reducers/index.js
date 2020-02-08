@@ -1,37 +1,35 @@
 import { combineReducers } from 'redux';
-import moment from 'moment';
-import { ADD_ACCOUNT, EDIT_ACCOUNT, DELETE_ACCOUNT, CHANGE_LOADING, GET_TOTAL_DATA, GET_CURRENT_DATA } from '../actions'
+import { 
+    ACCOUNT_ADDED, 
+    ACCOUNT_EDITED, 
+    ACCOUNT_DELETED, 
+    CHANGE_LOADING, 
+    TOTAL_DATA_FETCHED,
+    CATEGORIES_FETCHED, 
+    SET_CURRENT_ID
+} from '../../util/account'
 
 const accounts = (state = [], action) => {
     switch (action.type) {
-        case GET_TOTAL_DATA:
+        case TOTAL_DATA_FETCHED:
             return action.items
-        case ADD_ACCOUNT:
-            return [ ...state, { id: action.id, ...action.item }]
-        case EDIT_ACCOUNT:
+        case ACCOUNT_ADDED:
+            return [ ...state, { ...action.item, id: action.id }]
+        case ACCOUNT_EDITED:
             return state.map(item => 
                 item.id === action.item.id ? action.item : item
             )
-        case DELETE_ACCOUNT:
+        case ACCOUNT_DELETED:
             return state.filter(item => item.id !== action.id)
         default:
             return state
     }
 }
 
-const currentAccount = (
-    state={ 
-        title: '', 
-        price: 0, 
-        date: moment().format('YYYY-MM-DD'), 
-        note: '', 
-        cid: null 
-    }, 
-    action
-) => {
+const currentAccountId = (state = null, action) => {
     switch (action.type) {
-        case GET_CURRENT_DATA:
-            return action.item
+        case SET_CURRENT_ID:
+            return action.id ? action.id : null
         default:
             return state
     }
@@ -39,8 +37,8 @@ const currentAccount = (
 
 const categories = (state = [], action) => {
     switch (action.type) {
-        case GET_TOTAL_DATA:
-        case GET_CURRENT_DATA:
+        case TOTAL_DATA_FETCHED:
+        case CATEGORIES_FETCHED:
             return action.categories
         default:
             return state
@@ -59,7 +57,7 @@ const loading = (state = false, action) => {
 const accountApp = combineReducers({
     accounts,
     categories,
-    currentAccount,
+    currentAccountId,
     loading,
 })
 

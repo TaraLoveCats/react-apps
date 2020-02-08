@@ -2,10 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Tabs, DatePicker, Empty, Spin } from 'antd';
-import { getTotalData } from '../../store/actions';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import moment from 'moment';
-import { id2TypeAndIconName } from '../../util'
+import { GET_TOTAL_DATA, id2TypeAndIconName } from '../../util/account'
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
@@ -62,7 +61,7 @@ class AccountCharts extends Component {
     componentDidMount() {
         const { totalData, cidsMap } = this.props;
         if (Object.keys(cidsMap).length === 0 || totalData.length === 0) {
-            this.props.getTotalData()
+            this.props.dispatch({ type: GET_TOTAL_DATA })
         }
     }
 
@@ -148,7 +147,6 @@ class AccountCharts extends Component {
 AccountCharts.propTypes = {
     totalData: PropTypes.arrayOf(PropTypes.object).isRequired,
     cidsMap: PropTypes.object.isRequired,
-    getTotalData: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
 }
 
@@ -160,11 +158,7 @@ const mapStateToProps = state => {
         loading: state.loading,
     }
 }
-const mapDispatchToProps = dispatch => ({
-    getTotalData: () => dispatch(getTotalData())
-})
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
 )(AccountCharts);

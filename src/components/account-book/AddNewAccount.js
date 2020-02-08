@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Input, InputNumber, DatePicker, Button, Icon, Row, Col, Tabs, message, Spin } from 'antd';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { addAccount, editAccount, getCurrentData } from '../../store/actions';
-import { id2TypeAndIconName } from '../../util'
+import { ADD_ACCOUNT, EDIT_ACCOUNT, GET_TOTAL_DATA, SET_CURRENT_ID, GET_CATEGORIES, id2TypeAndIconName } from '../../util/account'
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
@@ -15,12 +14,20 @@ const formItemLayout = {
 const tailFormItemLayout = {
     wrapperCol: {
         xs: { span: 24, offset: 0 },
-        sm: { span: 8, offset: 4 }
+        sm: { span: 12, offset: 4 }
     }
 }
 const IconFont = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1615528_i5wu517bic.js'
 });
+const initData = {
+    id: null,
+    title: '', 
+    price: 0, 
+    date: moment().format('YYYY-MM-DD'), 
+    note: '', 
+    cid: null 
+}
 
 const CategoryList = ({ type, selectedId, onSelect, categories }) => {
     return categories.map((item, index) => {
@@ -48,26 +55,36 @@ const CategoryList = ({ type, selectedId, onSelect, categories }) => {
 
 class AddNewAccount extends Component {
 
-    state = {
-        selectedCategoryId: null,
-    }
+   state = {
+        selectedCategoryId: this.props.currentItem.cid,//初始化
+        currentItemId: this.props.currentItem.id
+    } 
 
     componentDidMount() {
-        const { id } = this.props.match.params;
-        this.props.getCurrentData(id)
-            .then(cid => {
-                this.setState({ selectedCategoryId: cid })
-            });
+        const { match, dispatch, categories } = this.props;
+        const { id } = match.params;
+        dispatch({ type: SET_CURRENT_ID, id }) //同步
+        //刷新页面
+        if (id && categories.length === 0) {
+            //edit
+            dispatch({ type: GET_TOTAL_DATA })
+        } else if (categories.length === 0) {
+            //add，只用请求categories
+            dispatch({ type: GET_CATEGORIES })
+        }
     }
 
-    // static getDerivedStateFromProps(props, current_state) {
-    //     if (current_state.selectedCategoryId === null) {
-    //         return {
-    //             selectedCategoryId: props.currentItem.cid,
-    //         }
-    //     }
-    //     return null
-    // }
+    // watch for changes to currentItemId
+    // a "fully uncontrolled component with a key" fallback
+    static getDerivedStateFromProps(props, state) {
+        if (props.currentItem.id !== state.currentItemId) {
+            return {
+                selectedCategoryId: props.currentItem.cid,
+                currentItemId: props.currentItem.id
+            }
+        }
+        return null
+    }
 
     submitForm = (e, id) => {
         e.preventDefault();
@@ -76,7 +93,7 @@ class AddNewAccount extends Component {
             message.warning('请务必选择账目种类~~');
             return;
         }
-        const { form: { validateFields }, match, history, editItem, addItem } = this.props;
+        const { form: { validateFields }, match, dispatch, history } = this.props;
         validateFields((err, fieldsValue) => {
             if (!err) {
                 const values = {
@@ -88,24 +105,10 @@ class AddNewAccount extends Component {
                 if (match.params.id) {
                     //editMode
                     values.id = id;
-                    editItem(values)
-                        .then(() => {
-                            message.success('修改成功')
-                            history.push('/life-apps/account-book');
-                        })
-                        .catch((e) => {
-                            message.error('修改失败')
-                        });
+                    dispatch({ type: EDIT_ACCOUNT, payload: { item: values, history } })
                 } else {
                     //addMode
-                    addItem(values).then(() => {    
-                        message.success('添加成功');
-                        history.push('/life-apps/account-book');
-                    })
-                    .catch((e) => {
-                        // console.log(e)
-                        message.error('添加失败')
-                    });
+                    dispatch({ type: ADD_ACCOUNT, payload: { item: values, history } })
                 }
             }
         })
@@ -121,8 +124,7 @@ class AddNewAccount extends Component {
     }
 
     render() {
-        const { form: { getFieldDecorator },  currentItem, match, history, categories, cidsMap, loading, messageInfo } = this.props;
-        
+        const { form: { getFieldDecorator },  currentItem, match, categories, cidsMap, loading } = this.props;
         const { id } = match.params;
         const initActiveKey = (cidsMap[currentItem.cid] && cidsMap[currentItem.cid].type) || 'outcome'
         return (
@@ -191,13 +193,14 @@ class AddNewAccount extends Component {
                                     )}
                                 </Form.Item>
                                 <Form.Item {...tailFormItemLayout}>
-                                    <Button type="primary" htmlType="submit">提交</Button>
-                                    <Button
-                                        onClick={this.cancelSubmit}
-                                        style={{ marginLeft: '20px' }}
-                                    >
-                                        取消
-                                </Button>
+                                    <Row>
+                                        <Col xs={10} sm={8}>
+                                            <Button type="primary" htmlType="submit">提交</Button>
+                                        </Col>
+                                        <Col span={10} offset={2}>
+                                            <Button onClick={this.cancelSubmit}>取消</Button>
+                                        </Col>
+                                    </Row>
                                 </Form.Item>
                             </Form>
 
@@ -216,29 +219,22 @@ AddNewAccount.propTypes = {
     loading: PropTypes.bool.isRequired,
     match: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    addItem: PropTypes.func.isRequired,
-    editItem: PropTypes.func.isRequired,
-    getCurrentData: PropTypes.func.isRequired,
     form: PropTypes.object.isRequired,
 }
 
-const WrappedAddNewAccount = Form.create({ name: 'create_new_account' })(AddNewAccount);
+
+const AddNewAccountWithForm = Form.create({ name: 'create_new_account' })(AddNewAccount);
 const mapStateToProps = state => {
     const cidsMap = id2TypeAndIconName(state.categories);
+    const id = state.currentAccountId;
+    const tempItem = state.accounts.filter(item => item.id === id)[0];
+    const currentItem = tempItem ? tempItem : initData;
     return {
-        currentItem: state.currentAccount,
         categories: state.categories,
+        currentItem,
         cidsMap,
         loading: state.loading,
     }
 }
-const mapDispatchToProps = dispatch => ({
-    addItem: item => dispatch(addAccount(item)),
-    editItem: item => dispatch(editAccount(item)),
-    getCurrentData: id => dispatch(getCurrentData(id)),
-})
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(WrappedAddNewAccount);
+export default connect(mapStateToProps)(AddNewAccountWithForm);
