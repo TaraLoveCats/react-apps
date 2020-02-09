@@ -113,11 +113,10 @@ class Home extends Component {
                         });
 
                         return (
-                            <React.Fragment key={index}>
+                            <React.Fragment key={date}>
                                 {/* 默认全部展开 */}
                                 <Collapse defaultActiveKey={[...Array(len).keys()]}>
                                     <Panel
-                                        key={index}
                                         style={{ padding: '5px' }}
                                         header={
                                             <Row>
