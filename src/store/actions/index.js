@@ -19,16 +19,17 @@ export const getTotalData = () => async dispatch => {
     let items, categories;
     try {
         [ items, categories ] = await Promise.all([ axios.get('/items'), axios.get('/categories') ]);
+        dispatch({
+            type: GET_TOTAL_DATA,
+            items: items.data,
+            categories: categories.data
+        });
+        return Promise.resolve();
     } catch(e) {
         return Promise.reject(e)
+    } finally {
+        dispatch(changeLoading(false));
     }
-    dispatch({
-        type: GET_TOTAL_DATA,
-        items: items.data,
-        categories: categories.data
-    });
-    dispatch(changeLoading(false));
-    return Promise.resolve();
 }
 
 export const getCurrentData = (id) => async (dispatch, getState) => {
@@ -46,16 +47,17 @@ export const getCurrentData = (id) => async (dispatch, getState) => {
             const promiseArr = [id ? axios.get(`/items/${id}`) : Promise.resolve()];
             promiseArr.push(axios.get('/categories'));
             [ item, categories ] = await Promise.all(promiseArr);
+            dispatch({
+                type: GET_CURRENT_DATA,
+                item: id ? item.data : getState().currentAccount,
+                categories: categories.data
+            })
+            return Promise.resolve(item.data.cid);
         } catch(e) {
             return Promise.reject(e)
+        } finally {
+            dispatch(changeLoading(false));
         }
-        dispatch({
-            type: GET_CURRENT_DATA,
-            item: id ? item.data : getState().currentAccount,
-            categories: categories.data
-        })
-        dispatch(changeLoading(false));
-        return Promise.resolve(item.data.cid);
     }
 
 }
@@ -65,16 +67,17 @@ export const addAccount = item => async dispatch => {
     let newItem;
     try {
         newItem = await axios.post('/items', item);
+        dispatch({
+            type: ADD_ACCOUNT,
+            id: generateID(),
+            item: newItem.data
+        })
+        return Promise.resolve();
     } catch (e) {
         return Promise.reject(e);
-    } 
-    dispatch({
-        type: ADD_ACCOUNT,
-        id: generateID(),
-        item: newItem.data
-    })
-    dispatch(changeLoading(false));
-    return Promise.resolve();
+    } finally {
+        dispatch(changeLoading(false));
+    }
 }
 
 export const editAccount = item => async dispatch => {
@@ -82,28 +85,30 @@ export const editAccount = item => async dispatch => {
     let updatedItem;
     try {
         updatedItem = await axios.put(`/items/${item.id}`, item);
+        dispatch({
+            type: EDIT_ACCOUNT,
+            item: updatedItem.data
+        })
+        return Promise.resolve();
     } catch (e) {
         return Promise.reject(e);
+    } finally {
+        dispatch(changeLoading(false));
     }
-    dispatch({
-        type: EDIT_ACCOUNT,
-        item: updatedItem.data
-    })
-    dispatch(changeLoading(false));
-    return Promise.resolve();
 }
 
 export const deleteAccount = id => async dispatch => {
     dispatch(changeLoading(true));
     try {
         axios.delete(`/items/${id}`);
+        dispatch({
+            type: DELETE_ACCOUNT,
+            id
+        })
+        return Promise.resolve();
     } catch(e) {
         return Promise.reject(e);
+    } finally {
+        dispatch(changeLoading(false));
     }
-    dispatch({
-        type: DELETE_ACCOUNT,
-        id
-    })
-    dispatch(changeLoading(false));
-    return Promise.resolve();
 }
