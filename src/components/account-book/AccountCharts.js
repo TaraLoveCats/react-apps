@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Tabs, DatePicker, Empty, Spin } from 'antd';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import moment from 'moment';
@@ -52,64 +51,55 @@ const Chart = ({ data, type, total }) => {
 }
 
 
-class AccountCharts extends Component {
+const AccountCharts = (props) => {
+    const [dateString, setDateString] = useState('');
+    const totalData = useSelector(state => state.accounts);
+    const cidsMap = useSelector(state => id2TypeAndIconName(state.categories));
+    const loading = useSelector(state => state.loading);
+    const dispatch = useDispatch();
 
-    state = {
-        dateString: [],
-    }
-
-    componentDidMount() {
-        const { totalData, cidsMap } = this.props;
-        if (Object.keys(cidsMap).length === 0 || totalData.length === 0) {
-            this.props.dispatch({ type: GET_TOTAL_DATA })
+    useEffect(() => {
+        if (Object.keys(cidsMap).length === 0) {
+            dispatch({ type: GET_TOTAL_DATA })
         }
-    }
-
-    changeRange = (date, dateString) => {
-        // console.log(dateString)
-        this.setState({ dateString })
-    }
-
-    render() {
-        //处理数据
-        const { totalData, cidsMap, loading } = this.props;
-        const { dateString } = this.state;
-        const dataShowed = dateString[0] ? totalData.filter(item => item.date >= dateString[0] && item.date <= dateString[1]) : totalData;
-        const cidToPriceSum = {};
-        let totalIncome = 0, totalOutcome = 0;
-        dataShowed.forEach((item) => {
-            //calculate the tatal
-            if (cidsMap[item.cid].type === 'income') {
-                totalIncome += item.price;
-            } else {
-                totalOutcome += item.price;
-            }
-            //total by cid
-            if (!cidToPriceSum[item.cid]) {
-                cidToPriceSum[item.cid] = item.price;
-            } else {
-                cidToPriceSum[item.cid] += item.price;
-            }
-        })
-        const outcomeDataByCategory = [], incomeDataByCategory = [];
-        Object.keys(cidToPriceSum).forEach(cid => {
-            const cidMap = cidsMap[cid];
-            if (cidMap.type === 'outcome') {
-                outcomeDataByCategory.push({
-                    name: cidMap.name,
-                    value: cidToPriceSum[cid],
-                    iconName: cidMap.iconName
-                })
-            } else {
-                incomeDataByCategory.push({
-                    name: cidMap.name,
-                    value: cidToPriceSum[cid],
-                    iconName: cidMap.iconName
-                })
-            }
-        });
-        outcomeDataByCategory.sort(sortByValue);
-        incomeDataByCategory.sort(sortByValue);
+    }, [])
+    //处理数据
+    const dataShowed = dateString[0] ? totalData.filter(item => item.date >= dateString[0] && item.date <= dateString[1]) : totalData;
+    const cidToPriceSum = {};
+    let totalIncome = 0, totalOutcome = 0;
+    dataShowed.forEach((item) => {
+        //calculate the tatal
+        if (cidsMap[item.cid].type === 'income') {
+            totalIncome += item.price;
+        } else {
+            totalOutcome += item.price;
+        }
+        //total by cid
+        if (!cidToPriceSum[item.cid]) {
+            cidToPriceSum[item.cid] = item.price;
+        } else {
+            cidToPriceSum[item.cid] += item.price;
+        }
+    })
+    const outcomeDataByCategory = [], incomeDataByCategory = [];
+    Object.keys(cidToPriceSum).forEach(cid => {
+        const cidMap = cidsMap[cid];
+        if (cidMap.type === 'outcome') {
+            outcomeDataByCategory.push({
+                name: cidMap.name,
+                value: cidToPriceSum[cid],
+                iconName: cidMap.iconName
+            })
+        } else {
+            incomeDataByCategory.push({
+                name: cidMap.name,
+                value: cidToPriceSum[cid],
+                iconName: cidMap.iconName
+            })
+        }
+    });
+    outcomeDataByCategory.sort(sortByValue);
+    incomeDataByCategory.sort(sortByValue);
 
         return (
             <React.Fragment>
@@ -120,7 +110,7 @@ class AccountCharts extends Component {
                             '本月': [moment().startOf('month'), moment().endOf('month')],
                             '今年': [moment().startOf('year'), moment().endOf('year')]
                         }}
-                        onChange={this.changeRange}
+                        onChange={(date, dateString) => setDateString(dateString)}
                     />
                     <Tabs defaultActiveKey="outcome">
                         <TabPane tab="支出" key="outcome">
@@ -141,24 +131,6 @@ class AccountCharts extends Component {
                 </Spin>
             </React.Fragment>
         )
-    }
 }
 
-AccountCharts.propTypes = {
-    totalData: PropTypes.arrayOf(PropTypes.object).isRequired,
-    cidsMap: PropTypes.object.isRequired,
-    loading: PropTypes.bool.isRequired,
-}
-
-const mapStateToProps = state => {
-    const cidsMap = id2TypeAndIconName(state.categories);
-    return {
-        totalData: state.accounts,
-        cidsMap,
-        loading: state.loading,
-    }
-}
-
-export default connect(
-    mapStateToProps,
-)(AccountCharts);
+export default AccountCharts;

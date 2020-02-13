@@ -29,6 +29,7 @@ const accounts = (state = [], action) => {
 const currentAccountId = (state = null, action) => {
     switch (action.type) {
         case SET_CURRENT_ID:
+            console.log(action)
             return action.id ? action.id : null
         default:
             return state

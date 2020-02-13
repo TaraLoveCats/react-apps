@@ -45,11 +45,21 @@ export default class Page extends Component {
                         <Header style={{ background: '#fff', padding: 10 }} />
                         <Content style={{ padding: '0 50px', background: '#fff url("/春节-铜钱.svg") no-repeat' }}>
                             <Switch>
-                                <Route path="/" exact render={() => <Redirect to="/life-apps/account-book" push />} />
-                                <Route path="/life-apps/account-book" exact component={Home} />
-                                <Route path="/life-apps/account-book/create" component={AddNewAccount} />
-                                <Route path="/life-apps/account-book/edit/:id" component={AddNewAccount} />
-                                <Route path="/life-apps/account-book/charts" component={AccountCharts} />
+                                <Route path="/" exact>
+                                    <Redirect to="/life-apps/account-book" push />
+                                </Route>
+                                <Route path="/life-apps/account-book" exact>
+                                    <Home />
+                                </Route>
+                                <Route path="/life-apps/account-book/create">
+                                    <AddNewAccount />
+                                </Route>
+                                <Route path="/life-apps/account-book/edit/:id">
+                                    <AddNewAccount />
+                                </Route>
+                                <Route path="/life-apps/account-book/charts">
+                                    <AccountCharts />
+                                </Route>
                             </Switch>
                         </Content>
                         <Footer style={{ textAlign: 'center' }}>{`Hello Tara@${(new Date()).getFullYear()}`}</Footer>

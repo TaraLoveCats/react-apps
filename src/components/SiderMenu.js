@@ -1,11 +1,11 @@
 import React from 'react';
 import { Menu, Icon } from 'antd';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const { SubMenu } = Menu;
 
-const SiderMenu = ({ location }) => {
-    // console.log(location);
+const SiderMenu = () => {
+    const location = useLocation();
     return (
         <Menu
             mode="inline"
@@ -44,6 +44,6 @@ const SiderMenu = ({ location }) => {
     )
 }
 
-export default withRouter(SiderMenu);
+export default SiderMenu;
 
 
