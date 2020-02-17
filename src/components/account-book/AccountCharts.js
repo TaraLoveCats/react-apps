@@ -52,7 +52,7 @@ const Chart = ({ data, type, total }) => {
 
 
 const AccountCharts = (props) => {
-    const [dateString, setDateString] = useState('');
+    const [dateString, setDateString] = useState([]);
     const totalData = useSelector(state => state.accounts);
     const cidsMap = useSelector(state => id2TypeAndIconName(state.categories));
     const loading = useSelector(state => state.loading);
@@ -105,6 +105,7 @@ const AccountCharts = (props) => {
             <React.Fragment>
                 <Spin tip="加载中..." spinning={loading}>
                     <RangePicker
+                        defaultValue={[moment().startOf('month'), moment().endOf('month')]}
                         ranges={{
                             '近一周': [moment().subtract(7, 'days'), moment()],
                             '本月': [moment().startOf('month'), moment().endOf('month')],

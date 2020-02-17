@@ -23,7 +23,7 @@ const Home = (props) => {
 
     useEffect(() => {
         dispatch({ type: GET_TOTAL_DATA })
-    }, [])
+    }, [dispatch])
 
     const deleteItem = (id) => {
         dispatch({ type: DELETE_ACCOUNT, payload: { id } })

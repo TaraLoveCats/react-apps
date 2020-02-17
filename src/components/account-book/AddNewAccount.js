@@ -78,7 +78,7 @@ const AddNewAccount = (props) => {
             //add，只用请求categories
             dispatch({ type: GET_CATEGORIES })
         }
-    }, [paramsId, categories])
+    }, [paramsId, categories, dispatch])
 
     // watch for changes to currentItemId
     // a "fully uncontrolled component with a key" fallback
