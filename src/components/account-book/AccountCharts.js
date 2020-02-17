@@ -33,11 +33,11 @@ const Chart = ({ data, type, total }) => {
         return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
     }
     return (
-        <ResponsiveContainer width={'100%'} height={400}>
+        <ResponsiveContainer width={'100%'} height={460}>
             <BarChart data={data} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" padding={{ right: 40 }} />
-                <YAxis type="category" dataKey="name" />
+                <YAxis type="category" dataKey="name" interval={0} />
                 <Tooltip />
                 <Bar
                     dataKey="value"
@@ -52,7 +52,8 @@ const Chart = ({ data, type, total }) => {
 
 
 const AccountCharts = (props) => {
-    const [dateString, setDateString] = useState([]);
+    const initDateString = [moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD')];
+    const [dateString, setDateString] = useState(initDateString);
     const totalData = useSelector(state => state.accounts);
     const cidsMap = useSelector(state => id2TypeAndIconName(state.categories));
     const loading = useSelector(state => state.loading);
