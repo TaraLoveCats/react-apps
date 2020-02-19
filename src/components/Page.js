@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { Layout, Icon, Modal, Spin } from 'antd';
 import SiderMenu from './SiderMenu';
@@ -7,21 +8,26 @@ import AccountCharts from './account-book/AccountCharts'
 import './Page.css'
 import AddNewAccount from './account-book/AddNewAccount'
 import Login from './login'
+import { SET_VISIBLE } from '../util/account'
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const Page = (props) => {
+const Page = () => {
     const [collapsed, toggleCollapsed] = useState(false);
-    const [visible, setVisible] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
+    const visible = useSelector(state => state.modalVisible);
+    const loginLoading = useSelector(state => state.loginLoading);
+    const { username } = useSelector(state => state.userInfo);
+    const loggedIn = useSelector(state => state.loggedIn)
+    const dispatch = useDispatch();
 
     const login = () => {
-        setVisible(true);
+        dispatch({ type: SET_VISIBLE, visible: true })
         setIsLogin(true);
     }
 
     const register = () => {
-        setVisible(true);
+        dispatch({ type: SET_VISIBLE, visible: true })
         setIsLogin(false);
     }
 
@@ -50,21 +56,26 @@ const Page = (props) => {
                         padding: '0px 16px',
                         boxShadow: '0px 3px 5px #ddd'
                     }}>
-                        <span 
-                            role="button" 
-                            onClick={login}
-                            className="loginBtn"
-                        >
-                            登录
-                        </span>
-                        <span style={{fontSize: 18}}>  /  </span>
-                        <span 
-                            role="button" 
-                            onClick={register}
-                            className="loginBtn"
-                        >
-                            注册
-                        </span>
+                        {loggedIn ? 
+                            <span style={{ fontSize: '16px', }}>{username}</span> :
+                            <React.Fragment>
+                                <span 
+                                role="button" 
+                                onClick={login}
+                                className="loginBtn"
+                                >
+                                    登录
+                                </span>
+                                <span style={{fontSize: 18}}>  /  </span>
+                                <span 
+                                    role="button" 
+                                    onClick={register}
+                                    className="loginBtn"
+                                >
+                                    注册
+                                </span>
+                            </React.Fragment> 
+                        }
                     </Header>
                     <Content style={{  background: '#fff', padding: '24px 16px' }}>
                         <Switch>
@@ -94,15 +105,15 @@ const Page = (props) => {
                 footer={null}
                 width={420}
                 maskClosable={false}
-                onCancel={() => setVisible(false)}
+                onCancel={() => dispatch({ type: SET_VISIBLE, visible: false })}
             >
-                {/* <Spin tip="..."> */}
-                <Login 
-                    key={visible}
-                    isLogin={isLogin}
-                    toggle={(login) => setIsLogin(login)}
-                />
-                {/* </Spin> */}
+                <Spin tip="加载中..." spinning={loginLoading}>
+                    <Login 
+                        key={visible}
+                        isLogin={isLogin}
+                        toggle={(login) => setIsLogin(login)}
+                    />
+                </Spin>
             </Modal>
         </Router>
     )

@@ -15,16 +15,57 @@ import {
     ACCOUNT_EDITED, 
     ACCOUNT_DELETED, 
     USER_LOGIN,
-    USER_REGISTER
+    USER_REGISTER,
+    LOGIN_SUCCESS,
+    SET_VISIBLE,
+    CHANGE_LOGIN_LOADING,
 } from '../../util/account'
 
-const openNotification = (mesg, desc) => {
-    notification.error({
-        message: mesg,
-        description: desc
-    })
-}
 //sagas
+function *register({ payload }) {
+    yield put({ type: CHANGE_LOGIN_LOADING, loading: true })
+    try {
+        const account = yield call(axios.post, '/users', payload)
+        yield fork(message.success, '注册成功')
+
+    } catch(e) {
+        //message和notification都有延时，需要无阻塞
+        yield fork(notification.error, {
+            message: '出错了，请稍后再试', 
+            description: e.message
+        })
+    } finally {
+        yield put({ type: CHANGE_LOGIN_LOADING, loading: false })
+    }
+}
+
+function *logIn({ payload: {phone, password}}) {
+    yield put({ type: CHANGE_LOGIN_LOADING, loading: true })
+    try {
+        const { data } = yield call(axios.get, `/users?phone=${phone}&password=${password}`);
+        if (data.length === 1) {
+            const account = data[0];
+            yield put({ 
+                type: LOGIN_SUCCESS, 
+                visible: false,
+                loggedIn: true,
+                userInfo: { username: account.username } 
+            }) //应返回用户相关的数据
+            yield fork(message.success, '登录成功')
+            yield put({ type: SET_VISIBLE, visible: false })
+        } else {
+            yield fork(message.error, '用户名或密码错误')
+        }
+    } catch (e) {
+        yield fork(notification.error, {
+            message: '出错了，请稍后再试', 
+            description: e.message
+        })
+    } finally {
+        yield put({ type: CHANGE_LOGIN_LOADING, loading: false })
+    }
+}
+
 function *getCategories() {
     let categories;
     yield put({ type: CHANGE_LOADING, loading: true })
@@ -33,7 +74,10 @@ function *getCategories() {
         yield put({ type: CATEGORIES_FETCHED, categories: categories.data })
     } catch(e) {
         //message和notification都有延时，需要无阻塞
-        yield fork(openNotification('获取数据失败', e))
+        yield fork(notification.error, {
+            message: '出错了，请稍后再试', 
+            description: e.message
+        })
     } finally {
         yield put({ type: CHANGE_LOADING, loading: false })
     }
@@ -46,7 +90,10 @@ function *getTotalData() {
         [ items, categories ] = yield all([call(axios.get, '/items'), call(axios.get, '/categories')])
         yield put({ type: TOTAL_DATA_FETCHED, items: items.data, categories: categories.data })
     } catch(e) {
-        yield fork(openNotification('获取数据失败', e))
+        yield fork(notification.error, {
+            message: '数据获取失败', 
+            description: e.message
+        })
     } finally {
         yield put({ type: CHANGE_LOADING, loading: false })
     }
@@ -61,7 +108,10 @@ function *addAccount({ payload: { item, history } }) {
         yield fork(message.success, '添加成功')
         yield call(history.push, '/life-apps/account-book')
     } catch (e) {
-        yield fork(openNotification('添加失败', e))
+        yield fork(notification.error, {
+            message: '添加失败', 
+            description: e.message
+        })
     } finally {
         yield put({ type: CHANGE_LOADING, loading: false })
     }
@@ -76,7 +126,10 @@ function *editAccount({ payload: { item, history } }) {
         yield fork(message.success, '修改成功')
         yield call(history.push, '/life-apps/account-book')
     } catch (e) {
-        yield fork(openNotification('修改失败', e))
+        yield fork(notification.error, {
+            message: '修改失败', 
+            description: e.message
+        })
     } finally {
         yield put({ type: CHANGE_LOADING, loading: false })
     }
@@ -89,7 +142,10 @@ function *deleteAccount({ payload: { id } }) {
         yield put({ type: ACCOUNT_DELETED, id })
         yield fork(message.success, '删除成功')
     } catch (e) {
-        yield fork(openNotification('删除失败', e))
+        yield fork(notification.error, {
+            message: '删除失败', 
+            description: e.message
+        })
     } finally {
         yield put({ type: CHANGE_LOADING, loading: false })
     }
@@ -102,4 +158,6 @@ export function *sagaMonitor() {
     yield takeLatest(DELETE_ACCOUNT, deleteAccount);
     yield takeLatest(GET_TOTAL_DATA, getTotalData);
     yield takeLatest(GET_CATEGORIES, getCategories);
+    yield takeLatest(USER_LOGIN, logIn);
+    yield takeLatest(USER_REGISTER, register)
 }

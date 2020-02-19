@@ -423,5 +423,17 @@
       "cid": "15",
       "id": "SauW4kZ"
     }
+  ],
+  "users": [
+    {
+      "phone": "15911022923",
+      "username": "Tara",
+      "password": "1234"
+    },
+    {
+      "phone": "18813155870",
+      "username": "Frank",
+      "password": "1388"
+    }
   ]
 }

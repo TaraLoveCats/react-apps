@@ -6,7 +6,10 @@ import {
     CHANGE_LOADING, 
     TOTAL_DATA_FETCHED,
     CATEGORIES_FETCHED, 
-    SET_CURRENT_ID
+    SET_CURRENT_ID,
+    CHANGE_LOGIN_LOADING,
+    LOGIN_SUCCESS,
+    SET_VISIBLE,
 } from '../../util/account'
 
 const accounts = (state = [], action) => {
@@ -55,11 +58,52 @@ const loading = (state = false, action) => {
     }
 }
 
+const loginLoading = (state = false, action) => {
+    switch (action.type) {
+        case CHANGE_LOGIN_LOADING:
+            return action.loading
+        default:
+            return state
+    }
+}
+
+const userInfo = (state = {}, action) => {
+    switch(action.type) {
+        case LOGIN_SUCCESS:
+            return action.userInfo
+        default:
+            return state
+    }
+}
+
+const modalVisible = (state = false, action) => {
+    switch(action.type) {
+        case SET_VISIBLE:
+        case LOGIN_SUCCESS:
+            return action.visible
+        default: 
+            return state
+    }
+}
+
+const loggedIn = (state = false, action) => {
+    switch(action.type) {
+        case LOGIN_SUCCESS:
+            return true
+        default:
+            return state
+    }
+}
+
 const accountApp = combineReducers({
     accounts,
     categories,
     currentAccountId,
     loading,
+    loginLoading,
+    userInfo,
+    modalVisible,
+    loggedIn
 })
 
 export default accountApp;

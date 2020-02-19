@@ -17,7 +17,7 @@ const Register = ({ form: { getFieldDecorator, validateFields, getFieldValue } }
                     initialRef.current = false;
                     return;
                 }
-                // dispatch({type: USER_REGISTER, payload: values})
+                dispatch({type: USER_REGISTER, payload: values})
             }
         })
     }
@@ -32,14 +32,14 @@ const Register = ({ form: { getFieldDecorator, validateFields, getFieldValue } }
                 )}
             </Form.Item>
             <Form.Item>
-                {getFieldDecorator('register_account', {
+                {getFieldDecorator('phone', {
                     rules: [{ required: true, message: '请输入正确的手机号' }],
                 })(
                     <Input placeholder="请输入注册手机号" />
                 )}
             </Form.Item>
             <Form.Item>
-                {getFieldDecorator('register_password', {
+                {getFieldDecorator('password', {
                     rules: [{ required: true, message: '请输入密码' }],
                 })(
                     <Input.Password placeholder="请输入密码" />
@@ -70,5 +70,5 @@ const Register = ({ form: { getFieldDecorator, validateFields, getFieldValue } }
 Register.propTypes = {
     form: PropTypes.object.isRequired,
 }
-const RegisterWithForm = Form.create({ name: 'create_new_account' })(Register);
+const RegisterWithForm = Form.create({ name: 'register_form' })(Register);
 export default RegisterWithForm;

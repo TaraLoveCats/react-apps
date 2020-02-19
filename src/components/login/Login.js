@@ -10,21 +10,21 @@ const Login = ({ form: { getFieldDecorator, validateFields } }) => {
         e.preventDefault();
         validateFields((err, fieldsValue) => {
             if (!err) {
-                // dispatch({type: USER_LOGIN, payload: fieldsValue})
+                dispatch({ type: USER_LOGIN, payload: fieldsValue })
             }
         })
     }
     return (
         <Form onSubmit={handleLogin}>
             <Form.Item>
-                {getFieldDecorator('login_account', {
+                {getFieldDecorator('phone', {
                     rules: [{ required: true, message: '请输入正确的手机号或邮箱' }],
                 })(
-                    <Input placeholder="请输入手机号或邮箱" />
+                    <Input placeholder="请输入手机号" />
                 )}
             </Form.Item>
             <Form.Item>
-                {getFieldDecorator('login_password', {
+                {getFieldDecorator('password', {
                     rules: [{ required: true, message: '请输入密码' }],
                 })(
                     <Input.Password placeholder="请输入密码" />
@@ -46,5 +46,5 @@ const Login = ({ form: { getFieldDecorator, validateFields } }) => {
 Login.propTypes = {
     form: PropTypes.object.isRequired,
 }
-const LoginWithForm = Form.create({ name: 'create_new_account' })(Login);
+const LoginWithForm = Form.create({ name: 'login_form' })(Login);
 export default LoginWithForm;
