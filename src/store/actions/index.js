@@ -14,6 +14,8 @@ import {
     ACCOUNT_ADDED, 
     ACCOUNT_EDITED, 
     ACCOUNT_DELETED, 
+    USER_LOGIN,
+    USER_REGISTER
 } from '../../util/account'
 
 const openNotification = (mesg, desc) => {
