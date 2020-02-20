@@ -2,7 +2,6 @@ import axios from 'axios';
 import { all, call, put, takeLatest, fork } from 'redux-saga/effects'
 import { message, notification } from 'antd';
 import {
-    generateID, 
     ADD_ACCOUNT,
     EDIT_ACCOUNT, 
     DELETE_ACCOUNT, 
@@ -14,20 +13,24 @@ import {
     ACCOUNT_ADDED, 
     ACCOUNT_EDITED, 
     ACCOUNT_DELETED, 
+} from '../../util/account'
+import { 
+    CHECK_IF_EXISTED, 
+    ALREADY_EXISTED,
     USER_LOGIN,
     USER_REGISTER,
     LOGIN_SUCCESS,
     SET_VISIBLE,
     CHANGE_LOGIN_LOADING,
-} from '../../util/account'
+} from '../../util/app'
 
 //sagas
 function *register({ payload }) {
     yield put({ type: CHANGE_LOGIN_LOADING, loading: true })
     try {
-        const account = yield call(axios.post, '/users', payload)
+        yield call(axios.post, '/users', payload)
         yield fork(message.success, '注册成功')
-
+        yield put({ type: SET_VISIBLE, visible: false })
     } catch(e) {
         //message和notification都有延时，需要无阻塞
         yield fork(notification.error, {
@@ -63,6 +66,15 @@ function *logIn({ payload: {phone, password}}) {
         })
     } finally {
         yield put({ type: CHANGE_LOGIN_LOADING, loading: false })
+    }
+}
+
+function *checkIfExisted({ payload: phone }) {
+    const { data } = yield call(axios.get, `/users?phone=${phone}`);
+    if (data.length > 0) {
+        yield put({ type: ALREADY_EXISTED, alreadyExisted: true })
+    } else {
+        yield put({ type: ALREADY_EXISTED, alreadyExisted: false })
     }
 }
 
@@ -104,7 +116,7 @@ function *addAccount({ payload: { item, history } }) {
     yield put({ type: CHANGE_LOADING, loading: true })
     try {
         newItem = yield call(axios.post, '/items', item)
-        yield put({ type: ACCOUNT_ADDED, id: generateID(), item: newItem.data }) //实际id应该是后端传过来的
+        yield put({ type: ACCOUNT_ADDED, item: newItem.data }) //id由后端传过来
         yield fork(message.success, '添加成功')
         yield call(history.push, '/life-apps/account-book')
     } catch (e) {
@@ -160,4 +172,5 @@ export function *sagaMonitor() {
     yield takeLatest(GET_CATEGORIES, getCategories);
     yield takeLatest(USER_LOGIN, logIn);
     yield takeLatest(USER_REGISTER, register)
+    yield takeLatest(CHECK_IF_EXISTED, checkIfExisted)
 }

@@ -12,7 +12,7 @@ const IconFont = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1615528_i5wu517bic.js'
 });
 
-const Home = (props) => {
+const Home = () => {
     const [dateString, setDateString] = useState(moment().format('YYYY-MM'));
     const history = useHistory();
     const match = useRouteMatch();

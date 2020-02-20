@@ -8,20 +8,20 @@ import AccountCharts from './account-book/AccountCharts'
 import './Page.css'
 import AddNewAccount from './account-book/AddNewAccount'
 import Login from './login'
-import { SET_VISIBLE } from '../util/account'
+import { SET_VISIBLE } from '../util/app'
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const Page = () => {
     const [collapsed, toggleCollapsed] = useState(false);
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(false);//用户点击的是登录或注册
     const visible = useSelector(state => state.modalVisible);
     const loginLoading = useSelector(state => state.loginLoading);
     const { username } = useSelector(state => state.userInfo);
     const loggedIn = useSelector(state => state.loggedIn)
     const dispatch = useDispatch();
 
-    const login = () => {
+    const logIn = () => {
         dispatch({ type: SET_VISIBLE, visible: true })
         setIsLogin(true);
     }
@@ -61,7 +61,7 @@ const Page = () => {
                             <React.Fragment>
                                 <span 
                                 role="button" 
-                                onClick={login}
+                                onClick={logIn}
                                 className="loginBtn"
                                 >
                                     登录
@@ -77,7 +77,7 @@ const Page = () => {
                             </React.Fragment> 
                         }
                     </Header>
-                    <Content style={{  background: '#fff', padding: '24px 16px' }}>
+                    <Content style={{ background: '#fff', padding: '24px 16px' }}>
                         <Switch>
                             <Route path="/" exact>
                                 <Redirect to="/life-apps/account-book" push />

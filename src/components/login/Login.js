@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Input, Button, Form } from 'antd';
 import PropTypes from 'prop-types';
-import { USER_LOGIN } from '../../util/account'
+import { USER_LOGIN } from '../../util/app'
 
 const Login = ({ form: { getFieldDecorator, validateFields } }) => {
     const dispatch = useDispatch();

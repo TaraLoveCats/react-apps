@@ -7,17 +7,20 @@ import {
     TOTAL_DATA_FETCHED,
     CATEGORIES_FETCHED, 
     SET_CURRENT_ID,
+} from '../../util/account'
+import { 
+    ALREADY_EXISTED,
     CHANGE_LOGIN_LOADING,
     LOGIN_SUCCESS,
-    SET_VISIBLE,
-} from '../../util/account'
+    SET_VISIBLE
+} from '../../util/app'
 
 const accounts = (state = [], action) => {
     switch (action.type) {
         case TOTAL_DATA_FETCHED:
             return action.items
         case ACCOUNT_ADDED:
-            return [ ...state, { ...action.item, id: action.id }]
+            return [ ...state, { ...action.item }]
         case ACCOUNT_EDITED:
             return state.map(item => 
                 item.id === action.item.id ? action.item : item
@@ -32,7 +35,6 @@ const accounts = (state = [], action) => {
 const currentAccountId = (state = null, action) => {
     switch (action.type) {
         case SET_CURRENT_ID:
-            console.log(action)
             return action.id ? action.id : null
         default:
             return state
@@ -89,7 +91,16 @@ const modalVisible = (state = false, action) => {
 const loggedIn = (state = false, action) => {
     switch(action.type) {
         case LOGIN_SUCCESS:
-            return true
+            return action.loggedIn
+        default:
+            return state
+    }
+}
+
+const alreadyExisted = (state = false, action) => {
+    switch(action.type) {
+        case ALREADY_EXISTED:
+            return action.alreadyExisted
         default:
             return state
     }
@@ -103,7 +114,8 @@ const accountApp = combineReducers({
     loginLoading,
     userInfo,
     modalVisible,
-    loggedIn
+    loggedIn,
+    alreadyExisted
 })
 
 export default accountApp;

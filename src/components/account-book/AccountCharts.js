@@ -51,19 +51,20 @@ const Chart = ({ data, type, total }) => {
 }
 
 
-const AccountCharts = (props) => {
+const AccountCharts = () => {
     const initDateString = [moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD')];
     const [dateString, setDateString] = useState(initDateString);
     const totalData = useSelector(state => state.accounts);
-    const cidsMap = useSelector(state => id2TypeAndIconName(state.categories));
+    const categories = useSelector(state => state.categories);
+    const cidsMap = id2TypeAndIconName(categories);
     const loading = useSelector(state => state.loading);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        if (Object.keys(cidsMap).length === 0) {
+        if (categories.length === 0) {
             dispatch({ type: GET_TOTAL_DATA })
         }
-    }, [])
+    }, [dispatch, categories])
     //处理数据
     const dataShowed = dateString[0] ? totalData.filter(item => item.date >= dateString[0] && item.date <= dateString[1]) : totalData;
     const cidToPriceSum = {};
