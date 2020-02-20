@@ -54,6 +54,7 @@ const Page = () => {
                         textAlign: 'right',
                         border: '1px solid #eee',
                         padding: '0px 16px',
+                        position: 'relative',                        
                         boxShadow: '0px 3px 5px #ddd'
                     }}>
                         {loggedIn ? 
