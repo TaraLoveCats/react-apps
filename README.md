@@ -39,7 +39,7 @@ React应用集合，现在只有一个account-book记账本应用
 
 #### 首页列表
 
-![列表.png](https://github.com/TaraLoveCats/react-apps/blob/hooks-dev/screenshots/%E5%88%97%E8%A1%A8.png)
+![列表.png](https://github.com/TaraLoveCats/react-apps/raw/hooks-dev/screenshots/%E5%88%97%E8%A1%A8.png)
 
 #### 月份过滤数据
 
