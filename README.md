@@ -9,8 +9,8 @@ React应用集合，现在只有一个account-book记账本应用
 
 ## 前后端交互
 
-采用JSON Server进行数据mocking  
-Axios异步请求
+- 采用JSON Server进行数据mocking  
+- Axios异步请求
 
 ## 项目主要依赖
 - react
@@ -39,7 +39,7 @@ Axios异步请求
 
 #### 首页列表
 
-![列表.png](https://i.loli.net/2020/03/09/cXZhJzwGvNeRPbS.png)
+![列表.png](https://github.com/TaraLoveCats/react-apps/blob/hooks-dev/screenshots/%E5%88%97%E8%A1%A8.png)
 
 #### 月份过滤数据
 
