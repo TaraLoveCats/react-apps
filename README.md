@@ -1,68 +1,111 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# react-apps
 
-## Available Scripts
+React应用集合，现在只有一个account-book记账本应用  
 
-In the project directory, you can run:
+## 版本
+- 分支`hooks-dev`是默认版本，代码采用react hooks, react-redux hooks和react-router-dom hooks进行了重写
+- 分支`master`用react class components书写
+- 分支`thunk`用react class components书写，采用redux-thunk管理异步数据流，其他分支均用redux-saga
 
-### `yarn start`
+## 前后端交互
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+采用JSON Server进行数据mocking  
+Axios异步请求
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## 项目主要依赖
+- react
+- react-router-dom
+- redux
+- redux-saga / redux-thunk
+- antd：UI组件
+- axios
+- json-server
+- recharts：组件化react图表
+- moment：处理日期
 
-### `yarn test`
+## 通用模块
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+ - 侧边栏，提供导航
+ - Header，提供登录/注册功能
+   - 登录/注册功能实现了前端逻辑和校验，并使用mock数据（用户名和密码），登录模块是独立的，不和其他应用有数据关联。
 
-### `yarn build`
+## 记账本
+实现了基本的记账功能，可分类记账，编辑、删除记账内容；提供统计数据展示
+- 首页：账本记录列表
+- 图表页：展示统计
+- 编辑页：记账编辑页面
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 截图
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+#### 首页列表
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+![列表.png](https://i.loli.net/2020/03/09/cXZhJzwGvNeRPbS.png)
 
-### `yarn eject`
+#### 月份过滤数据
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+![月份.png](https://i.loli.net/2020/03/09/y5C74gGRIO3bwJq.png)
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### 图表统计数据
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+![图表.png](https://i.loli.net/2020/03/09/DZWVwsvSuYQqHEP.png)
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+#### 登录校验
 
-## Learn More
+![登录校验.png](https://i.loli.net/2020/03/09/r9c4n1ysxVEDj2R.png)
+![登录成功.png](https://i.loli.net/2020/03/09/7giwsRxuqWlGzfD.png)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### 注册校验
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+输入手机号后会发送ajax请求校验手机号是否已经存在
+![注册校验.png](https://i.loli.net/2020/03/09/rSNRAXnsbtMZO7Q.png)
+![注册校验2.png](https://i.loli.net/2020/03/09/gHkmxlSofsiPe9D.png)
 
-### Code Splitting
+#### 新建/编辑记账条目
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+![新建记账.png](https://i.loli.net/2020/03/09/nE62zAgdDwNf1sZ.png)
 
-### Analyzing the Bundle Size
+![修改.png](https://i.loli.net/2020/03/09/Eki4O5AxVDIwlpr.png)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+### 目录结构
 
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+```
+react-apps
+├── public
+│   ├── favicon.ico
+│   ├── index.html
+│   ├── logo192.png
+│   ├── logo512.png
+│   ├── manifest.json
+│   └── robots.txt
+├── src
+│   ├── components
+│   │   ├── account-book                           ---记账本
+│   │   │   ├── AccountCharts.js
+│   │   │   ├── AddNewAccount.js
+│   │   │   ├── index.css
+│   │   │   └── index.js
+│   │   ├── login                                  ---登录模块
+│   │   │   ├── index.js
+│   │   │   ├── Login.js
+│   │   │   └── Register.js
+│   │   ├── Page.css
+│   │   ├── Page.js                                ---页面
+│   │   └── SiderMenu.js                           ---侧边栏
+│   ├── store
+│   │   ├── actions
+│   │   │   └── index.js
+│   │   ├── reducers
+│   │   │   └── index.js
+│   │   └── index.js
+│   ├── util
+│   │   ├── account.js
+│   │   └── app.js
+│   ├── App.css
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
+├── config-overrides.js
+├── db.json
+├── package.json
+└── README.md
+```
