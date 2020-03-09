@@ -4,7 +4,7 @@ import { Input, Button, Form, Checkbox } from 'antd';
 import PropTypes from 'prop-types';
 import { phonePattern, USER_REGISTER, CHECK_IF_EXISTED } from '../../util/app'
 
-const Register = ({ form: { getFieldDecorator, validateFields, getFieldValue } }) => {
+function Register({ form: { getFieldDecorator, validateFields, getFieldValue } }) {
     // const initialRef = useRef(true); //代表初始值
     const dispatch = useDispatch();
     const alreadyExisted = useSelector(state => state.alreadyExisted)

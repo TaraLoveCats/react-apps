@@ -4,7 +4,7 @@ import { Input, Button, Form } from 'antd';
 import PropTypes from 'prop-types';
 import { USER_LOGIN } from '../../util/app'
 
-const Login = ({ form: { getFieldDecorator, validateFields } }) => {
+function Login({ form: { getFieldDecorator, validateFields } }) {
     const dispatch = useDispatch();
     const handleLogin = (e) => {
         e.preventDefault();

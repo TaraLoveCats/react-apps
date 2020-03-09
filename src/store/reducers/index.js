@@ -15,7 +15,7 @@ import {
     SET_VISIBLE
 } from '../../util/app'
 
-const accounts = (state = [], action) => {
+function accounts(state = [], action) {
     switch (action.type) {
         case TOTAL_DATA_FETCHED:
             return action.items
@@ -32,7 +32,7 @@ const accounts = (state = [], action) => {
     }
 }
 
-const currentAccountId = (state = null, action) => {
+function currentAccountId(state = null, action) {
     switch (action.type) {
         case SET_CURRENT_ID:
             return action.id ? action.id : null
@@ -41,7 +41,7 @@ const currentAccountId = (state = null, action) => {
     }
 }
 
-const categories = (state = [], action) => {
+function categories(state = [], action) {
     switch (action.type) {
         case TOTAL_DATA_FETCHED:
         case CATEGORIES_FETCHED:
@@ -51,7 +51,7 @@ const categories = (state = [], action) => {
     }
 }
 
-const loading = (state = false, action) => {
+function loading(state = false, action) {
     switch (action.type) {
         case CHANGE_LOADING:
             return action.loading
@@ -60,7 +60,7 @@ const loading = (state = false, action) => {
     }
 }
 
-const loginLoading = (state = false, action) => {
+function loginLoading(state = false, action) {
     switch (action.type) {
         case CHANGE_LOGIN_LOADING:
             return action.loading
@@ -69,7 +69,7 @@ const loginLoading = (state = false, action) => {
     }
 }
 
-const userInfo = (state = {}, action) => {
+function userInfo(state = {}, action) {
     switch(action.type) {
         case LOGIN_SUCCESS:
             return action.userInfo
@@ -78,7 +78,7 @@ const userInfo = (state = {}, action) => {
     }
 }
 
-const modalVisible = (state = false, action) => {
+function modalVisible(state = false, action) {
     switch(action.type) {
         case SET_VISIBLE:
         case LOGIN_SUCCESS:
@@ -88,7 +88,7 @@ const modalVisible = (state = false, action) => {
     }
 }
 
-const loggedIn = (state = false, action) => {
+function loggedIn(state = false, action) {
     switch(action.type) {
         case LOGIN_SUCCESS:
             return action.loggedIn
@@ -97,7 +97,7 @@ const loggedIn = (state = false, action) => {
     }
 }
 
-const alreadyExisted = (state = false, action) => {
+function alreadyExisted(state = false, action) {
     switch(action.type) {
         case ALREADY_EXISTED:
             return action.alreadyExisted

@@ -3,7 +3,7 @@ import { Button, List, Descriptions, Affix, DatePicker, Popconfirm, Icon, Row, C
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import moment from 'moment';
-import './Home.css'
+import './index.css'
 import { DELETE_ACCOUNT, GET_TOTAL_DATA, id2TypeAndIconName } from '../../util/account'
 
 const { MonthPicker } = DatePicker;
@@ -12,8 +12,8 @@ const IconFont = Icon.createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_1615528_i5wu517bic.js'
 });
 
-const Home = () => {
-    const [dateString, setDateString] = useState(moment().format('YYYY-MM'));
+export default function Home() {
+    const [dateString, setDateString] = useState("");
     const history = useHistory();
     const match = useRouteMatch();
     const totalData = useSelector(state => state.accounts);
@@ -64,12 +64,12 @@ const Home = () => {
     });
 
     return (
-        <React.Fragment>
+        <>
             <Row style={{ marginBottom: '20px' }} >
                 <Col span={8}>
                     <MonthPicker
                         onChange={(date, dateString) => setDateString(dateString)}
-                        defaultValue={moment()}
+                        // defaultValue={moment()}
                         format='YYYY-MM'
                     />
                 </Col>
@@ -171,8 +171,6 @@ const Home = () => {
                     )
                 })}
             </Spin>
-        </React.Fragment>
+        </>
     )
 }
-
-export default Home;

@@ -30,7 +30,7 @@ const initData = {
     cid: null
 }
 
-const CategoryList = ({ type, selectedId, onSelect, categories }) => {
+function CategoryList({ type, selectedId, onSelect, categories }) {
     return categories.map((item, index) => {
         if (item.type === type) {
             const color = selectedId === item.id ? '#1890ff' : 'initial';
@@ -54,7 +54,7 @@ const CategoryList = ({ type, selectedId, onSelect, categories }) => {
     })
 }
 
-const AddNewAccount = (props) => {
+function AddNewAccount(props) {
     const { form: { validateFields, getFieldDecorator } } = props;
     const history = useHistory();
     const { id: paramsId } = useParams();
@@ -125,7 +125,7 @@ const AddNewAccount = (props) => {
 
     const initActiveKey = (cidsMap[currentItem.cid] && cidsMap[currentItem.cid].type) || 'outcome'
     return (
-        <React.Fragment>
+        <>
             <Spin tip="加载中..." spinning={loading}>
                 <Row>
                     <Col xs={24} sm={24} md={24} lg={10}>
@@ -204,7 +204,7 @@ const AddNewAccount = (props) => {
                     </Col>
                 </Row>
             </Spin>
-        </React.Fragment>
+        </>
     )
 }
 

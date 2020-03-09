@@ -9,11 +9,11 @@ const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 
 //sort by value, from max to min
-const sortByValue = (a, b) => {
+function sortByValue(a, b) {
     return b.value - a.value;
 }
 
-const CustomizedLabel = ({ x, y, width, height, value, total }) => {
+function CustomizedLabel({ x, y, width, height, value, total }) {
     const percent = (value / total * 100).toFixed(1)
     return (
         <text
@@ -28,7 +28,7 @@ const CustomizedLabel = ({ x, y, width, height, value, total }) => {
     )
 };
 
-const Chart = ({ data, type, total }) => {
+function Chart({ data, type, total }) {
     if (data.length === 0) {
         return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
     }
@@ -51,9 +51,8 @@ const Chart = ({ data, type, total }) => {
 }
 
 
-const AccountCharts = () => {
-    const initDateString = [moment().startOf('month').format('YYYY-MM-DD'), moment().endOf('month').format('YYYY-MM-DD')];
-    const [dateString, setDateString] = useState(initDateString);
+export default function AccountCharts() {
+    const [dateString, setDateString] = useState([]);
     const totalData = useSelector(state => state.accounts);
     const categories = useSelector(state => state.categories);
     const cidsMap = id2TypeAndIconName(categories);
@@ -103,37 +102,35 @@ const AccountCharts = () => {
     outcomeDataByCategory.sort(sortByValue);
     incomeDataByCategory.sort(sortByValue);
 
-        return (
-            <React.Fragment>
-                <Spin tip="加载中..." spinning={loading}>
-                    <RangePicker
-                        defaultValue={[moment().startOf('month'), moment().endOf('month')]}
-                        ranges={{
-                            '近一周': [moment().subtract(7, 'days'), moment()],
-                            '本月': [moment().startOf('month'), moment().endOf('month')],
-                            '今年': [moment().startOf('year'), moment().endOf('year')]
-                        }}
-                        onChange={(date, dateString) => setDateString(dateString)}
-                    />
-                    <Tabs defaultActiveKey="outcome">
-                        <TabPane tab="支出" key="outcome">
-                            <Chart
-                                data={outcomeDataByCategory}
-                                type="outcome"
-                                total={totalOutcome}
-                            />
-                        </TabPane>
-                        <TabPane tab="收入" key="income">
-                            <Chart
-                                data={incomeDataByCategory}
-                                type="income"
-                                total={totalIncome}
-                            />
-                        </TabPane>
-                    </Tabs>
-                </Spin>
-            </React.Fragment>
-        )
+    return (
+        <>
+            <Spin tip="加载中..." spinning={loading}>
+                <RangePicker
+                    // defaultValue={[moment().startOf('month'), moment().endOf('month')]}
+                    ranges={{
+                        '近一周': [moment().subtract(7, 'days'), moment()],
+                        '本月': [moment().startOf('month'), moment().endOf('month')],
+                        '今年': [moment().startOf('year'), moment().endOf('year')]
+                    }}
+                    onChange={(date, dateString) => setDateString(dateString)}
+                />
+                <Tabs defaultActiveKey="outcome">
+                    <TabPane tab="支出" key="outcome">
+                        <Chart
+                            data={outcomeDataByCategory}
+                            type="outcome"
+                            total={totalOutcome}
+                        />
+                    </TabPane>
+                    <TabPane tab="收入" key="income">
+                        <Chart
+                            data={incomeDataByCategory}
+                            type="income"
+                            total={totalIncome}
+                        />
+                    </TabPane>
+                </Tabs>
+            </Spin>
+        </>
+    )
 }
-
-export default AccountCharts;

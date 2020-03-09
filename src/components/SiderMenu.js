@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const { SubMenu } = Menu;
 
-const SiderMenu = () => {
+export default function SiderMenu() {
     const location = useLocation();
     return (
         <Menu
@@ -43,7 +43,5 @@ const SiderMenu = () => {
         </Menu>
     )
 }
-
-export default SiderMenu;
 
 

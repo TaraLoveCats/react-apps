@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { Layout, Icon, Modal, Spin } from 'antd';
 import SiderMenu from './SiderMenu';
-import Home from './account-book/Home'
+import Home from './account-book'
 import AccountCharts from './account-book/AccountCharts'
 import './Page.css'
 import AddNewAccount from './account-book/AddNewAccount'
@@ -12,7 +12,7 @@ import { SET_VISIBLE } from '../util/app'
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const Page = () => {
+export default function Page() {
     const [collapsed, toggleCollapsed] = useState(false);
     const [isLogin, setIsLogin] = useState(false);//用户点击的是登录或注册
     const visible = useSelector(state => state.modalVisible);
@@ -50,7 +50,7 @@ const Page = () => {
                 </Sider>
                 <Layout>
                     <Header style={{ 
-                        background: '#fff url("/欢迎.svg") no-repeat',
+                        background: '#fff',
                         textAlign: 'right',
                         border: '1px solid #eee',
                         padding: '0px 16px',
@@ -59,7 +59,7 @@ const Page = () => {
                     }}>
                         {loggedIn ? 
                             <span style={{ fontSize: '16px', }}>{username}</span> :
-                            <React.Fragment>
+                            <>
                                 <span 
                                 role="button" 
                                 onClick={logIn}
@@ -75,7 +75,7 @@ const Page = () => {
                                 >
                                     注册
                                 </span>
-                            </React.Fragment> 
+                            </> 
                         }
                     </Header>
                     <Content style={{ background: '#fff', padding: '24px 16px' }}>
@@ -97,7 +97,9 @@ const Page = () => {
                             </Route>
                         </Switch>
                     </Content>
-                    <Footer style={{ textAlign: 'center' }}>{`Hello Tara@${(new Date()).getFullYear()}`}</Footer>
+                    <Footer style={{ textAlign: 'center' }}>
+                        Hello Tara@<a href="mailto:taralovecats@163.com">taralovecats@163.com</a>
+                    </Footer>
                 </Layout>
             </Layout>
                     
@@ -119,5 +121,3 @@ const Page = () => {
         </Router>
     )
 }
-
-export default Page;
